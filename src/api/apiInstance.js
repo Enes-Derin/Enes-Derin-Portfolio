@@ -6,7 +6,7 @@ import {
     clearTokens
 } from "./tokenService";
 
-const BASE_URL = "http://enesderin.com.tr:8080";
+const BASE_URL = "/api";
 
 /* =====================
    AXIOS INSTANCE
@@ -92,7 +92,7 @@ apiInstance.interceptors.response.use(
                 const refreshToken = getRefreshToken();
 
                 const refreshResponse = await axios.post(
-                    `${BASE_URL}/auth/refresh`,
+                    `${BASE_URL}/auth/refreshToken`,
                     { refreshToken }
                 );
 
