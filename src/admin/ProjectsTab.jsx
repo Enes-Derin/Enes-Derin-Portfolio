@@ -4,6 +4,7 @@ import {
     fetchAllProjects,
     createProject,
     deleteProject,
+    updateProject,
 } from "../redux/projectSlice";
 
 export default function ProjectsTab() {
@@ -26,7 +27,7 @@ export default function ProjectsTab() {
         } else {
             dispatch(createProject(fd));
         }
-        setForm({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", imageUrl: null });
+        setForm({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", image: null });
         setEditingId(null);
     };
 
