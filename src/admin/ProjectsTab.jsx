@@ -10,7 +10,7 @@ export default function ProjectsTab() {
     const dispatch = useDispatch();
     const { list } = useSelector((s) => s.project);
 
-    const [form, setForm] = useState({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", imageUrl: null });
+    const [form, setForm] = useState({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", image: null });
     const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
@@ -49,7 +49,7 @@ export default function ProjectsTab() {
                     <input
                         type="file"
                         id="project-image"
-                        onChange={(e) => setForm({ ...form, imageUrl: e.target.files[0] })}
+                        onChange={(e) => setForm({ ...form, image: e.target.files[0] })}
                     />
                     <label htmlFor="project-image" className="file-input-label">
                         {form.imageUrl ? "Dosya Değiştir" : "Proje Görseli Seç"}
