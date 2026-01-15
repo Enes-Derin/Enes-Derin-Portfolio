@@ -10,7 +10,7 @@ export default function ProjectsTab() {
     const dispatch = useDispatch();
     const { list } = useSelector((s) => s.project);
 
-    const [form, setForm] = useState({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", image: null });
+    const [form, setForm] = useState({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", imageUrl: null });
     const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
@@ -26,7 +26,7 @@ export default function ProjectsTab() {
         } else {
             dispatch(createProject(fd));
         }
-        setForm({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", image: null });
+        setForm({ title: "", description: "", githubLink: "", demoLink: "", techStack: "", imageUrl: null });
         setEditingId(null);
     };
 
@@ -49,12 +49,12 @@ export default function ProjectsTab() {
                     <input
                         type="file"
                         id="project-image"
-                        onChange={(e) => setForm({ ...form, image: e.target.files[0] })}
+                        onChange={(e) => setForm({ ...form, imageUrl: e.target.files[0] })}
                     />
                     <label htmlFor="project-image" className="file-input-label">
-                        {form.image ? "Dosya Değiştir" : "Proje Görseli Seç"}
+                        {form.imageUrl ? "Dosya Değiştir" : "Proje Görseli Seç"}
                     </label>
-                    {form.image && <span className="file-name">{form.image.name}</span>}
+                    {form.imageUrl && <span className="file-name">{form.imageUrl}</span>}
                 </div>
 
                 <button type="submit">{editingId ? "Update Project" : "Add Project"}</button>
