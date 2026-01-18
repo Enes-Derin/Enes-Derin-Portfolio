@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import apiInstance, { postMultipart } from '../api/apiInstance';
+import apiInstance, { postMultipart, putMultipart } from '../api/apiInstance';
 
 export const fetchAllProjects = createAsyncThunk(
     'project/fetchAll',
@@ -17,7 +17,7 @@ export const createProject = createAsyncThunk(
 export const updateProject = createAsyncThunk(
     'project/update',
     async ({ id, formData }) =>
-        postMultipart(`/project/admin/${id}`, formData)
+        putMultipart(`/project/admin/${id}`, formData)
 );
 
 export const deleteProject = createAsyncThunk(
