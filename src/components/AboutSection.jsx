@@ -184,7 +184,7 @@ export default function AboutSection({ lang = "EN" }) {
                      * itemProp="description" ile Person schema'sına bağlı.
                      */}
                     <div className="about-txt">
-                        <p itemProp="description">{data?.aboutText || c.p2}</p>
+                        <p itemProp="description">{c.p2}</p>
                     </div>
                 </div>
 
