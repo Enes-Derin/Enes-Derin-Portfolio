@@ -1,92 +1,50 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { fetchHero, updateHero, createHero, deleteHero } from "../redux/heroSlice";
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { fetchHero, createHero, updateHero, deleteHero } from "../redux/heroSlice"
 
 export default function HeroTab() {
-    const dispatch = useDispatch();
-    const hero = useSelector((s) => s.hero.data); // tek kayıt
-    const [form, setForm] = useState({ title: "", subtitle: "", buttonText: "", buttonLink: "", backgroundImage: null });
+    const dispatch = useDispatch()
+    const hero = useSelector(s => s.hero.data)
+    const [form, setForm] = useState({ title: "", subtitle: "", buttonText: "", buttonLink: "", backgroundImage: null })
 
-    useEffect(() => {
-        dispatch(fetchHero());
-    }, [dispatch]);
+    useEffect(() => { dispatch(fetchHero(1)) }, [dispatch])
+    useEffect(() => { if (hero) setForm({ title: hero.title || "", subtitle: hero.subtitle || "", buttonText: hero.buttonText || "", buttonLink: hero.buttonLink || "", backgroundImage: null }) }, [hero])
 
-    useEffect(() => {
-        if (hero) {
-            setForm({
-                title: hero.title || "",
-                subtitle: hero.subtitle || "",
-                buttonText: hero.buttonText || "",
-                buttonLink: hero.buttonLink || "",
-                backgroundImage: null
-            });
-        }
-    }, [hero]);
-
-    const submit = (e) => {
-        e.preventDefault();
-        const fd = new FormData();
-        Object.entries(form).forEach(([k, v]) => v && fd.append(k, v));
-
-        if (hero?.id) {
-            dispatch(updateHero({ id: hero.id, formData: fd }));
-        } else {
-            dispatch(createHero(fd));
-        }
-
-        setForm({ title: "", subtitle: "", buttonText: "", buttonLink: "", backgroundImage: null });
-    };
-
-    const removeItem = () => {
-        if (hero?.id && confirm("Are you sure?")) dispatch(deleteHero(hero.id));
-    };
+    const submit = e => {
+        e.preventDefault()
+        const fd = new FormData()
+        Object.entries(form).forEach(([k, v]) => v && fd.append(k, v))
+        hero?.id ? dispatch(updateHero({ id: hero.id, formData: fd })) : dispatch(createHero(fd))
+    }
 
     return (
         <div>
-            <form onSubmit={submit} className="admin-form">
+            <form onSubmit={submit} className="adm-form">
+                <h3>Hero Section</h3>
                 {["title", "subtitle", "buttonText", "buttonLink"].map(f => (
-                    <input
-                        key={f}
-                        placeholder={f}
-                        value={form[f]}
-                        onChange={(e) => setForm({ ...form, [f]: e.target.value })}
-                    />
+                    <input key={f} placeholder={f} value={form[f]} onChange={e => setForm({ ...form, [f]: e.target.value })} />
                 ))}
-                <div className="file-input-container">
-                    <input
-                        type="file"
-                        id="hero-bg"
-                        onChange={(e) => setForm({ ...form, backgroundImage: e.target.files[0] })}
-                    />
-                    <label htmlFor="hero-bg" className="file-input-label">
-                        {form.backgroundImage ? "Dosya Değiştir" : "Arka Plan Seç"}
+                <div className="adm-file-wrap">
+                    <input type="file" id="hbg" onChange={e => setForm({ ...form, backgroundImage: e.target.files[0] })} />
+                    <label htmlFor="hbg" className="adm-file-lbl">
+                        {form.backgroundImage ? "Change File" : "Background Image"}
                     </label>
-                    {form.backgroundImage && <span className="file-name">{form.backgroundImage.name}</span>}
+                    {form.backgroundImage && <span className="adm-fname">{form.backgroundImage.name}</span>}
                 </div>
-                <button type="submit">{hero?.id ? "Update Hero" : "Add Hero"}</button>
+                <button type="submit">{hero?.id ? "Update" : "Create"}</button>
             </form>
 
             {hero && (
-                <div className="admin-list">
-                    <div className="admin-list-item">
-                        <div>
-                            <p><b>{hero.title}</b></p>
-                            <p>{hero.subtitle}</p>
-                            <p>{hero.buttonText} → {hero.buttonLink}</p>
-                        </div>
-                        <div>
-                            <button className="update" onClick={() => setForm({
-                                title: hero.title,
-                                subtitle: hero.subtitle,
-                                buttonText: hero.buttonText,
-                                buttonLink: hero.buttonLink,
-                                backgroundImage: null
-                            })}>Update</button>
-                            <button className="delete" onClick={removeItem}>Delete</button>
+                <div className="adm-list">
+                    <div className="adm-item">
+                        <div><p><b>{hero.title}</b></p><p>{hero.subtitle}</p></div>
+                        <div className="adm-btns">
+                            <button className="adm-btn-u" onClick={() => setForm({ title: hero.title, subtitle: hero.subtitle, buttonText: hero.buttonText, buttonLink: hero.buttonLink, backgroundImage: null })}>Edit</button>
+                            <button className="adm-btn-d" onClick={() => hero?.id && confirm("Delete?") && dispatch(deleteHero(hero.id))}>Del</button>
                         </div>
                     </div>
                 </div>
             )}
         </div>
-    );
+    )
 }

@@ -6,7 +6,7 @@ import {
     clearTokens
 } from "./tokenService";
 
-const BASE_URL = "/api";
+const BASE_URL = "http://localhost:8080";
 
 /* =====================
    AXIOS INSTANCE

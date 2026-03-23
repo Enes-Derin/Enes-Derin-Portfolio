@@ -1,80 +1,50 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { createAbout, fetchAbout, updateAbout, deleteAbout } from "../redux/aboutSlice";
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { fetchAbout, createAbout, updateAbout, deleteAbout } from "../redux/aboutSlice"
 
 export default function AboutTab() {
-    const dispatch = useDispatch();
-    const about = useSelector((s) => s.about.data);
-    const [aboutText, setAboutText] = useState("");
-    const [profileImage, setProfileImage] = useState(null);
+    const dispatch = useDispatch()
+    const about = useSelector(s => s.about.data)
+    const [text, setText] = useState("")
+    const [img, setImg] = useState(null)
 
-    useEffect(() => {
-        dispatch(fetchAbout());
-    }, [dispatch]);
+    useEffect(() => { dispatch(fetchAbout(1)) }, [dispatch])
+    useEffect(() => { if (about) setText(about.aboutText || "") }, [about])
 
-    useEffect(() => {
-        if (about) {
-            setAboutText(about.aboutText || "");
-        }
-    }, [about]);
-
-    const submit = (e) => {
-        e.preventDefault();
-        const fd = new FormData();
-        fd.append("aboutText", aboutText);
-        if (profileImage) fd.append("profileImage", profileImage);
-
-        if (about?.id) {
-            dispatch(updateAbout({ id: about.id, formData: fd }));
-        } else {
-            dispatch(createAbout(fd));
-        }
-
-        setProfileImage(null);
-    };
-
-    const removeItem = () => {
-        if (about?.id && confirm("Are you sure?")) {
-            dispatch(deleteAbout(about.id));
-        }
-    };
+    const submit = e => {
+        e.preventDefault()
+        const fd = new FormData(); fd.append("aboutText", text); if (img) fd.append("profileImage", img)
+        about?.id ? dispatch(updateAbout({ id: about.id, formData: fd })) : dispatch(createAbout(fd))
+        setImg(null)
+    }
 
     return (
         <div>
-            <form onSubmit={submit} className="admin-form">
-                <textarea
-                    placeholder="About text"
-                    value={aboutText}
-                    onChange={(e) => setAboutText(e.target.value)}
-                />
-                <div className="file-input-container">
-                    <input
-                        type="file"
-                        id="profile-image"
-                        onChange={(e) => setProfileImage(e.target.files[0])}
-                    />
-                    <label htmlFor="profile-image" className="file-input-label">
-                        {profileImage ? "Dosya Değiştir" : "Profil Fotoğrafı Seç"}
-                    </label>
-                    {profileImage && <span className="file-name">{profileImage.name}</span>}
+            <form onSubmit={submit} className="adm-form">
+                <h3>About</h3>
+                <textarea rows={5} placeholder="About text" value={text} onChange={e => setText(e.target.value)} />
+                <div className="adm-file-wrap">
+                    <input type="file" id="ai" onChange={e => setImg(e.target.files[0])} />
+                    <label htmlFor="ai" className="adm-file-lbl">{img ? "Change Photo" : "Profile Photo"}</label>
+                    {img && <span className="adm-fname">{img.name}</span>}
                 </div>
-                <button type="submit">{about?.id ? "Update About" : "Add About"}</button>
+                <button type="submit">{about?.id ? "Update" : "Create"}</button>
             </form>
 
             {about && (
-                <div className="admin-list">
-                    <div className="admin-list-item">
+                <div className="adm-list">
+                    <div className="adm-item">
                         <div>
-                            <p>{about.aboutText}</p>
-                            {about.profileImage && <img src={about.profileImage} alt="profile" width={50} />}
+                            <p>{about.aboutText?.slice(0, 80)}…</p>
+                            {about.profileImage && <img src={about.profileImage} alt="profile" width={48} style={{ borderRadius: 4, marginTop: 6 }} />}
                         </div>
-                        <div>
-                            <button className="update" onClick={() => setAboutText(about.aboutText)}>Update</button>
-                            <button className="delete" onClick={removeItem}>Delete</button>
+                        <div className="adm-btns">
+                            <button className="adm-btn-u" onClick={() => setText(about.aboutText)}>Edit</button>
+                            <button className="adm-btn-d" onClick={() => about?.id && confirm("Delete?") && dispatch(deleteAbout(about.id))}>Del</button>
                         </div>
                     </div>
                 </div>
             )}
         </div>
-    );
+    )
 }

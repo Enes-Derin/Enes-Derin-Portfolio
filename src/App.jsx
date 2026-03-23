@@ -1,87 +1,68 @@
-// import React, { useState } from "react";
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-// import Home from "./pages/Home";
-// import About from "./pages/About";
-// import Projects from "./pages/Projects";
-// import Skills from "./pages/Skills";
-// import Contact from "./pages/Contact";
-// import Nav from "./components/Nav";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import Cursor from "./components/Cursor"
+import Home from "./pages/Home"
+import LoginPage from "./admin/LoginPage"
+import AdminPage from "./admin/AdminPage"
+import ProtectedRoute from "./components/ProtectedRoute"
+import { useEffect } from "react"
 
+export default function App() {
 
-// export default function App() {
-//   const [darkMode, setDarkMode] = useState(false);
+  /* App.jsx veya index.js içinde */
+  useEffect(() => {
+    const isTouch = window.matchMedia("(hover: none)").matches
+    if (isTouch) {
+      document.body.style.cursor = "auto"
+      const cur = document.getElementById("cur")
+      const dot = document.getElementById("cur-dot")
+      if (cur) cur.style.display = "none"
+      if (dot) dot.style.display = "none"
+      return
+    }
 
+    const cur = document.getElementById("cur")
+    const dot = document.getElementById("cur-dot")
+    if (!cur || !dot) return
 
-//   const toggleTheme = () => setDarkMode(!darkMode);
+    let mx = 0, my = 0
+    const move = e => {
+      mx = e.clientX; my = e.clientY
+      dot.style.left = mx + "px"
+      dot.style.top = my + "px"
+      cur.style.left = mx + "px"
+      cur.style.top = my + "px"
+    }
 
+    /* Hover state — interaktif elemanlarda büyüsün */
+    const INTERACTIVE = "a,button,[role=button],.sk-card,.afr,.ct-s,.adm-tab"
+    const over = e => { if (e.target.closest(INTERACTIVE)) cur.classList.add("h") }
+    const out = e => { if (e.target.closest(INTERACTIVE)) cur.classList.remove("h") }
+    const down = () => cur.classList.add("click")
+    const up = () => cur.classList.remove("click")
 
-//   return (
-//     <Router>
-//       <div className={`${darkMode ? 'bg-dark text-light' : 'bg-light text-dark'} min-vh-100 font-sans transition-theme`}>
-//         <Nav darkMode={darkMode} toggleTheme={toggleTheme} />
-//         <AnimatePresence mode="wait">
-//           <Routes>
-//             <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-//             <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
-//             <Route path="/projects" element={<PageWrapper><Projects /></PageWrapper>} />
-//             <Route path="/skills" element={<PageWrapper><Skills /></PageWrapper>} />
-//             <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
-//           </Routes>
-//         </AnimatePresence>
-//       </div>
-//     </Router>
-//   );
-// }
+    window.addEventListener("mousemove", move, { passive: true })
+    document.addEventListener("mouseover", over)
+    document.addEventListener("mouseout", out)
+    document.addEventListener("mousedown", down)
+    document.addEventListener("mouseup", up)
 
-
-// function PageWrapper({ children }) {
-//   const { scrollY } = useScroll();
-//   const yTransform = useTransform(scrollY, [0, 500], [0, -50]);
-
-
-//   return (
-//     <motion.div
-//       style={{ y: yTransform }}
-//       initial={{ opacity: 0, y: 20 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       exit={{ opacity: 0, y: -20 }}
-//       transition={{ duration: 0.5 }}
-//     >
-//       {children}
-//     </motion.div>
-//   );
-// }
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Projects from "./pages/Projects";
-import LoginPage from "./admin/LoginPage";
-import AdminPage from "./admin/AdminPage";
-import ProtectedRoute from "./components/ProtectedRoute";
-
-function App() {
+    return () => {
+      window.removeEventListener("mousemove", move)
+      document.removeEventListener("mouseover", over)
+      document.removeEventListener("mouseout", out)
+      document.removeEventListener("mousedown", down)
+      document.removeEventListener("mouseup", up)
+    }
+  }, [])
   return (
     <BrowserRouter>
+      <Cursor />
+      <div className="scan" />
       <Routes>
-        {/* Public */}
         <Route path="/" element={<Home />} />
-        <Route path="/projects" element={<Projects />} />
-
-        {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Admin */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
-
-export default App;

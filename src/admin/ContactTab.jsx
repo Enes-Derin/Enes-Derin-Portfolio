@@ -1,61 +1,39 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { createContact, fetchContact, updateContact } from "../redux/contactSlice";
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { fetchContact, createContact, updateContact } from "../redux/contactSlice"
+
+const FIELDS = ["email", "phone", "location", "linkedinLink", "githubLink"]
 
 export default function ContactTab() {
-    const dispatch = useDispatch();
-    const { data } = useSelector((s) => s.contact);
+    const dispatch = useDispatch()
+    const { data } = useSelector(s => s.contact)
+    const [form, setForm] = useState({ email: "", phone: "", location: "", linkedinLink: "", githubLink: "" })
 
-    const [form, setForm] = useState({ email: "", phone: "", location: "", linkedinLink: "", githubLink: "" });
-    const [editing, setEditing] = useState(false);
+    useEffect(() => { dispatch(fetchContact(1)) }, [dispatch])
+    useEffect(() => { if (data) setForm(data) }, [data])
 
-    useEffect(() => {
-        dispatch(fetchContact());
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (data) {
-            setForm(data);
-            setEditing(true);
-        }
-    }, [data]);
-
-    const submit = (e) => {
-        e.preventDefault();
-        if (editing) {
-            dispatch(updateContact({ id: data.id, data: form }));
-        } else {
-            dispatch(createContact(form));
-        }
-    };
+    const submit = e => {
+        e.preventDefault()
+        data ? dispatch(updateContact({ id: data.id, data: form })) : dispatch(createContact(form))
+    }
 
     return (
         <div>
-            <form onSubmit={submit} className="admin-form">
-                {Object.keys(form)?.map((key) => (
-                    <input
-                        key={key}
-                        placeholder={key}
-                        value={form[key]}
-                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                    />
+            <form onSubmit={submit} className="adm-form">
+                <h3>Contact Info</h3>
+                {FIELDS.map(k => (
+                    <input key={k} placeholder={k} value={form[k] || ""} onChange={e => setForm({ ...form, [k]: e.target.value })} />
                 ))}
-                <button type="submit">{editing ? "Update Contact" : "Add Contact"}</button>
+                <button type="submit">{data ? "Update" : "Create"}</button>
             </form>
 
             {data && (
-                <div className="admin-list">
-                    <div className="admin-list-item">
-                        <div>
-                            <p>Email: {data.email}</p>
-                            <p>Phone: {data.phone}</p>
-                            <p>Location: {data.location}</p>
-                            <p>LinkedIn: {data.linkedinLink}</p>
-                            <p>GitHub: {data.githubLink}</p>
-                        </div>
+                <div className="adm-list">
+                    <div className="adm-item">
+                        <div><p><b>{data.email}</b></p><p>{data.phone} · {data.location}</p></div>
                     </div>
                 </div>
             )}
         </div>
-    );
+    )
 }
